@@ -41,11 +41,11 @@ async function run() {
     });
 
     // my-bills apis
-    // app.post("/my-bills", async (req, res) => {
-    //   const data = req.body;
-    //   const result = await myBillCollection.insertOne(data);
-    //   res.send(result);
-    // });
+    app.post("/my-bills", async (req, res) => {
+      const data = req.body;
+      const result = await myBillCollection.insertOne(data);
+      res.send(result);
+    });
 
     app.get("/my-bills", async (req, res) => {
       const result = await myBillCollection.find().toArray();
