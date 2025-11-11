@@ -19,7 +19,6 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-  console.log("hlw world!");
   try {
     await client.connect();
 
@@ -33,6 +32,15 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/bills/recent", async (req, res) => {
+      const bills = await billCollection
+        .find()
+        .sort({ _id: 1 })
+        .limit(6)
+        .toArray();
+      res.send(bills);
+    });
+
     app.get("/bills/:id", async (req, res) => {
       const { id } = req.params;
       const objId = { _id: new ObjectId(id) };
@@ -40,15 +48,16 @@ async function run() {
       res.send(result);
     });
 
-    // my-bills apis
+    // my-bills apis start
     app.post("/my-bills", async (req, res) => {
       const data = req.body;
       const result = await myBillCollection.insertOne(data);
       res.send(result);
     });
 
-    app.get("/my-bills", async (req, res) => {
-      const result = await myBillCollection.find().toArray();
+    app.get("/my-bills/category", async (req, res) => {
+      const { category } = req.query.category;
+      const result = await myBillCollection.find({ category }).toArray();
       res.send(result);
     });
 
@@ -62,6 +71,24 @@ async function run() {
       const { id } = req.params;
       const objId = { _id: new ObjectId(id) };
       const result = await myBillCollection.findOne(objId);
+      res.send(result);
+    });
+
+    app.put("/my-bills/:id", async (req, res) => {
+      const { id } = req.params;
+      const data = req.body;
+      const objId = { _id: new ObjectId(id) };
+      const update = {
+        $set: data,
+      };
+      const result = await myBillCollection.updateOne(objId, update);
+      res.send(result);
+    });
+
+    app.delete("/my-bills/:id", async (req, res) => {
+      const { id } = req.params;
+      const objId = { _id: new ObjectId(id) };
+      const result = await myBillCollection.deleteOne(objId);
       res.send(result);
     });
 
