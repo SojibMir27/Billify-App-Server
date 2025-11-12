@@ -32,6 +32,17 @@ async function run() {
       res.send(result);
     });
 
+    // filter category api
+    app.get("/bills-category", async (req, res) => {
+      const category = req.query.category;
+      const query = category
+        ? { category: { $regex: new RegExp(`^${category}$`, "i") } }
+        : {};
+      const result = await billCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // recent-bill api
     app.get("/bills/recent", async (req, res) => {
       const bills = await billCollection
         .find()
@@ -41,6 +52,7 @@ async function run() {
       res.send(bills);
     });
 
+    // single bill api
     app.get("/bills/:id", async (req, res) => {
       const { id } = req.params;
       const objId = { _id: new ObjectId(id) };
@@ -55,18 +67,14 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/my-bills/category", async (req, res) => {
-      const { category } = req.query.category;
-      const result = await myBillCollection.find({ category }).toArray();
-      res.send(result);
-    });
-
+    // my paid bill filter api
     app.get("/my-bills", async (req, res) => {
       const email = req.query.email;
       const result = await myBillCollection.find({ email }).toArray();
       res.send(result);
     });
 
+    // my single bill api
     app.get("/my-bills/:id", async (req, res) => {
       const { id } = req.params;
       const objId = { _id: new ObjectId(id) };
@@ -74,6 +82,7 @@ async function run() {
       res.send(result);
     });
 
+    // my bill update api
     app.put("/my-bills/:id", async (req, res) => {
       const { id } = req.params;
       const data = req.body;
@@ -85,6 +94,7 @@ async function run() {
       res.send(result);
     });
 
+    // my bill delete api
     app.delete("/my-bills/:id", async (req, res) => {
       const { id } = req.params;
       const objId = { _id: new ObjectId(id) };
